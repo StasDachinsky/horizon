@@ -1,0 +1,58 @@
+{%- liquid
+  assign width = section.settings.section_width | default: 'full-width'
+  assign gap = section.settings.gap | default: 0
+  assign pt = section.settings.padding_block_start | default: 0
+  assign pb = section.settings.padding_block_end | default: 0
+-%}
+<div
+  class="ec-blocks ec-blocks--{{ width }}"
+  style="display:flex;flex-direction:column;width:100%;gap:{{ gap }}px;padding-block-start:{{ pt }}px;padding-block-end:{{ pb }}px;"
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "EC Blocks",
+  "class": "ec-blocks-wrapper",
+  "blocks": [
+    { "type": "@app" }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        { "value": "full-width", "label": "Full width" },
+        { "value": "page-width", "label": "Page width" }
+      ],
+      "default": "full-width"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between blocks",
+      "min": 0, "max": 100, "step": 1, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_block_start",
+      "label": "Top padding",
+      "min": 0, "max": 100, "step": 1, "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_block_end",
+      "label": "Bottom padding",
+      "min": 0, "max": 100, "step": 1, "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    { "name": "EC Blocks", "category": "Layout" }
+  ]
+}
+{% endschema %}
