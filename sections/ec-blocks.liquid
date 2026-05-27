@@ -3,9 +3,29 @@
   assign gap = section.settings.gap | default: 0
   assign pt = section.settings.padding_block_start | default: 0
   assign pb = section.settings.padding_block_end | default: 0
+  assign niche = section.settings.niche | default: '' | downcase
 -%}
+{%- if niche != blank -%}
+  <style>
+    {%- case niche -%}
+      {%- when 'beauty', 'skincare', 'cosmetic', 'derma' -%}
+        :root { --ec-accent: #c8775a; --ec-accent-soft: rgba(200,119,90,.1); }
+      {%- when 'electronic', 'electronics', 'gadget', 'tech', 'device', 'appliance' -%}
+        :root { --ec-accent: #0066ff; --ec-accent-soft: rgba(0,102,255,.08); }
+      {%- when 'health', 'fitness', 'supplement', 'vitamin', 'wellness' -%}
+        :root { --ec-accent: #10894e; --ec-accent-soft: rgba(16,137,78,.1); --ec-success: #10894e; }
+      {%- when 'apparel', 'fashion', 'clothing', 'footwear', 'shoes', 'outdoor', 'winter' -%}
+        :root { --ec-accent: #000000; --ec-accent-soft: rgba(0,0,0,.06); }
+      {%- when 'home', 'kitchen', 'furniture', 'decor' -%}
+        :root { --ec-accent: #8b5a3c; --ec-accent-soft: rgba(139,90,60,.08); }
+      {%- when 'food', 'pet', 'baby', 'kids' -%}
+        :root { --ec-accent: #d97706; --ec-accent-soft: rgba(217,119,6,.08); }
+    {%- endcase -%}
+  </style>
+{%- endif -%}
 <div
   class="ec-blocks ec-blocks--{{ width }}"
+  data-ec-niche="{{ niche }}"
   style="display:flex;flex-direction:column;width:100%;gap:{{ gap }}px;padding-block-start:{{ pt }}px;padding-block-end:{{ pb }}px;"
 >
   {% content_for 'blocks' %}
@@ -49,6 +69,12 @@
       "label": "Bottom padding",
       "min": 0, "max": 100, "step": 1, "unit": "px",
       "default": 0
+    },
+    {
+      "type": "text",
+      "id": "niche",
+      "label": "Niche slug (drives accent palette)",
+      "info": "beauty / electronic / health / apparel / home / food — applied as data-ec-niche + :root vars"
     }
   ],
   "presets": [
