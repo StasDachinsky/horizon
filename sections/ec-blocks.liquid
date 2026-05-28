@@ -5,6 +5,10 @@
   assign pb = section.settings.padding_block_end | default: 0
   assign niche = section.settings.niche | default: '' | downcase
   assign label = section.settings.section_title | default: ''
+  assign preset = section.settings.colors_preset | default: 'light'
+  assign custom_bg = section.settings.color_bg | default: ''
+  assign custom_fg = section.settings.color_fg | default: ''
+  assign custom_accent = section.settings.color_accent | default: ''
 -%}
 {%- if niche != blank -%}
   <style>
@@ -24,10 +28,65 @@
     {%- endcase -%}
   </style>
 {%- endif -%}
+{%- comment -%}
+  Section-scoped colour scheme. Three CSS custom properties (--ec-bg / --ec-fg /
+  --ec-accent) cascade into every block inside this wrapper. The wrapper itself
+  paints --ec-bg / --ec-fg so empty padding/gaps inherit the scheme too.
+
+  Preset values are picked to keep contrast WCAG-AA for body text:
+  - light  : white bg + near-black fg, niche-driven accent (default rhythm pole)
+  - dark   : near-black bg + white fg, accent lifts to a soft warm tone
+  - accent : accent colour as bg, white fg, white as inner accent (banner-like)
+  - custom : merchant-picked values, falls back to light if a slot is empty
+{%- endcomment -%}
+<style>
+  {%- case preset -%}
+    {%- when 'dark' -%}
+      [data-ec-section-id="{{ section.id }}"] {
+        --ec-bg: #111111;
+        --ec-bg-soft: #1f1f1f;
+        --ec-fg: #ffffff;
+        --ec-fg-sec: #b3b3b3;
+        --ec-border: rgba(255,255,255,.12);
+        --ec-divider: rgba(255,255,255,.08);
+        --ec-accent-fg: #111111;
+      }
+    {%- when 'accent' -%}
+      [data-ec-section-id="{{ section.id }}"] {
+        --ec-bg: var(--ec-accent, #b32218);
+        --ec-bg-soft: var(--ec-accent, #b32218);
+        --ec-fg: #ffffff;
+        --ec-fg-sec: rgba(255,255,255,.78);
+        --ec-border: rgba(255,255,255,.18);
+        --ec-divider: rgba(255,255,255,.12);
+        --ec-accent: #ffffff;
+        --ec-accent-soft: rgba(255,255,255,.14);
+        --ec-accent-fg: var(--ec-accent, #b32218);
+      }
+    {%- when 'custom' -%}
+      [data-ec-section-id="{{ section.id }}"] {
+        {%- if custom_bg != blank -%}--ec-bg: {{ custom_bg }}; --ec-bg-soft: {{ custom_bg }};{%- endif -%}
+        {%- if custom_fg != blank -%}--ec-fg: {{ custom_fg }};{%- endif -%}
+        {%- if custom_accent != blank -%}--ec-accent: {{ custom_accent }};{%- endif -%}
+      }
+    {%- else -%}
+      [data-ec-section-id="{{ section.id }}"] {
+        --ec-bg: #ffffff;
+        --ec-bg-soft: #fafafa;
+        --ec-fg: #000000;
+        --ec-fg-sec: #535862;
+        --ec-border: rgba(0,0,0,.08);
+        --ec-divider: rgba(0,0,0,.06);
+        --ec-accent-fg: #ffffff;
+      }
+  {%- endcase -%}
+</style>
 <div
   class="ec-blocks ec-blocks--{{ width }}"
   data-ec-niche="{{ niche }}"
-  style="display:flex;flex-direction:column;width:100%;gap:{{ gap }}px;padding-block-start:{{ pt }}px;padding-block-end:{{ pb }}px;"
+  data-ec-section-id="{{ section.id }}"
+  data-ec-preset="{{ preset }}"
+  style="display:flex;flex-direction:column;width:100%;gap:{{ gap }}px;padding-block-start:{{ pt }}px;padding-block-end:{{ pb }}px;background:var(--ec-bg);color:var(--ec-fg);"
 >
   {%- if label != blank -%}
     <div class="ec-blocks__label" style="display:flex;align-items:center;gap:8px;padding:8px 16px;margin:0;font:600 11px/1 ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border-block:1px solid #e5e7eb;">
@@ -87,6 +146,39 @@
       "id": "section_title",
       "label": "Section label",
       "info": "Renders a small grey label above the block contents. Used by the block-showcase mode to identify each block on the page."
+    },
+    {
+      "type": "header",
+      "content": "Colour scheme"
+    },
+    {
+      "type": "select",
+      "id": "colors_preset",
+      "label": "Preset",
+      "info": "Light / dark / accent ships a known-good palette. Custom uses the pickers below.",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "light"
+    },
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Background (custom)",
+      "info": "Used when preset = custom. Leave empty to keep the preset background."
+    },
+    {
+      "type": "color",
+      "id": "color_fg",
+      "label": "Foreground (custom)"
+    },
+    {
+      "type": "color",
+      "id": "color_accent",
+      "label": "Accent (custom)"
     }
   ],
   "presets": [
