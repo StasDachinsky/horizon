@@ -4,6 +4,7 @@
   assign pt = section.settings.padding_block_start | default: 0
   assign pb = section.settings.padding_block_end | default: 0
   assign niche = section.settings.niche | default: '' | downcase
+  assign label = section.settings.section_title | default: ''
 -%}
 {%- if niche != blank -%}
   <style>
@@ -28,6 +29,11 @@
   data-ec-niche="{{ niche }}"
   style="display:flex;flex-direction:column;width:100%;gap:{{ gap }}px;padding-block-start:{{ pt }}px;padding-block-end:{{ pb }}px;"
 >
+  {%- if label != blank -%}
+    <div class="ec-blocks__label" style="display:flex;align-items:center;gap:8px;padding:8px 16px;margin:0;font:600 11px/1 ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border-block:1px solid #e5e7eb;">
+      <span aria-hidden="true">▸</span>{{ label }}
+    </div>
+  {%- endif -%}
   {% content_for 'blocks' %}
 </div>
 
@@ -75,6 +81,12 @@
       "id": "niche",
       "label": "Niche slug (drives accent palette)",
       "info": "beauty / electronic / health / apparel / home / food — applied as data-ec-niche + :root vars"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section label",
+      "info": "Renders a small grey label above the block contents. Used by the block-showcase mode to identify each block on the page."
     }
   ],
   "presets": [
