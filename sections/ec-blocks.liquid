@@ -4,7 +4,6 @@
   assign pt = section.settings.padding_block_start | default: 0
   assign pb = section.settings.padding_block_end | default: 0
   assign niche = section.settings.niche | default: '' | downcase
-  assign label = section.settings.section_title | default: ''
 -%}
 {%- if niche != blank -%}
   <style>
@@ -37,11 +36,6 @@
   data-ec-section-id="{{ section.id }}"
   style="--ec-bg:var(--color-background,#fff);--ec-bg-soft:var(--color-background,#fafafa);--ec-fg:var(--color-foreground,#111);--ec-fg-sec:var(--color-foreground-muted,#535862);--ec-border:var(--color-border,rgba(0,0,0,.08));--ec-divider:var(--color-border,rgba(0,0,0,.06));--ec-accent-fg:#fff;display:flex;flex-direction:column;width:100%;gap:{{ gap }}px;padding-block-start:{{ pt }}px;padding-block-end:{{ pb }}px;background:var(--ec-bg);color:var(--ec-fg);"
 >
-  {%- if label != blank -%}
-    <div class="ec-blocks__label" style="display:flex;align-items:center;gap:8px;padding:8px 16px;margin:0;font:600 11px/1 ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border-block:1px solid #e5e7eb;">
-      <span aria-hidden="true">▸</span>{{ label }}
-    </div>
-  {%- endif -%}
   {% content_for 'blocks' %}
 </div>
 
@@ -50,7 +44,8 @@
   "name": "EC Blocks",
   "class": "ec-blocks-wrapper",
   "blocks": [
-    { "type": "@app" }
+    { "type": "@app" },
+    { "type": "@theme" }
   ],
   "settings": [
     {
@@ -89,12 +84,6 @@
       "id": "niche",
       "label": "Niche slug (drives accent palette)",
       "info": "beauty / electronic / health / apparel / home / food — applied as data-ec-niche + :root vars"
-    },
-    {
-      "type": "text",
-      "id": "section_title",
-      "label": "Section label",
-      "info": "Renders a small grey label above the block contents. Used by the block-showcase mode to identify each block on the page."
     },
     {
       "type": "header",

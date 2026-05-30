@@ -1,0 +1,52 @@
+{%- liquid
+  assign scheme = block.settings.color_scheme
+  assign label = block.settings.section_title | default: ''
+-%}
+{%- comment -%}
+  Per-block wrapper. Carries its OWN native color scheme (color-{{ scheme }}
+  class → --color-* vars), which we alias into the --ec-* custom properties the
+  EC app blocks consume. One ec-section per app block lets each section pick its
+  own scheme in the editor while staying nested under the single EC Blocks root.
+  The niche-driven --ec-accent override (set on :root by the parent ec-blocks
+  section) cascades through untouched.
+{%- endcomment -%}
+<div
+  class="ec-section color-{{ scheme }}"
+  {{ block.shopify_attributes }}
+  style="--ec-bg:var(--color-background,#fff);--ec-bg-soft:var(--color-background,#fafafa);--ec-fg:var(--color-foreground,#111);--ec-fg-sec:var(--color-foreground-muted,#535862);--ec-border:var(--color-border,rgba(0,0,0,.08));--ec-divider:var(--color-border,rgba(0,0,0,.06));--ec-accent-fg:#fff;display:flex;flex-direction:column;background:var(--ec-bg);color:var(--ec-fg);"
+>
+  {%- if label != blank -%}
+    <div class="ec-blocks__label" style="display:flex;align-items:center;gap:8px;padding:8px 16px;margin:0;font:600 11px/1 ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border-block:1px solid #e5e7eb;">
+      <span aria-hidden="true">▸</span>{{ label }}
+    </div>
+  {%- endif -%}
+  {% content_for 'blocks' %}
+</div>
+
+{% schema %}
+{
+  "name": "EC Section",
+  "tag": null,
+  "blocks": [
+    { "type": "@app" }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section label",
+      "info": "Optional small grey label rendered above the block. Used by the showcase view to identify each block."
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:settings.color_scheme",
+      "default": "scheme-1"
+    }
+  ]
+}
+{% endschema %}
