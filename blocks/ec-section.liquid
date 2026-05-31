@@ -1,7 +1,8 @@
 {%- liquid
   assign inherit = block.settings.inherit_color_scheme
   assign scheme = block.settings.color_scheme
-  assign label = block.settings.section_title | default: ''
+  assign label = block.settings.title | default: ''
+  assign show_label = block.settings.show_label
 -%}
 {%- comment -%}
   Per-block wrapper. By default it INHERITS the colour scheme from the parent
@@ -16,7 +17,7 @@
   {{ block.shopify_attributes }}
   style="{% unless inherit %}--ec-bg:var(--color-background,#fff);--ec-bg-soft:var(--color-background,#fafafa);--ec-fg:var(--color-foreground,#111);--ec-fg-sec:var(--color-foreground-muted,#535862);--ec-border:var(--color-border,rgba(0,0,0,.08));--ec-divider:var(--color-border,rgba(0,0,0,.06));--ec-accent:var(--color-primary,#000);--ec-accent-soft:rgb(var(--color-primary-rgb,0 0 0) / .1);--ec-accent-fg:var(--color-primary-button-text,#fff);{% endunless %}display:flex;flex-direction:column;background:var(--ec-bg);color:var(--ec-fg);"
 >
-  {%- if label != blank -%}
+  {%- if show_label and label != blank -%}
     <div class="ec-blocks__label" style="display:flex;align-items:center;gap:8px;padding:8px 16px;margin:0;font:600 11px/1 ui-monospace,monospace;letter-spacing:.05em;text-transform:uppercase;color:#6b7280;background:#f3f4f6;border-block:1px solid #e5e7eb;">
       <span aria-hidden="true">▸</span>{{ label }}
     </div>
@@ -34,9 +35,16 @@
   "settings": [
     {
       "type": "text",
-      "id": "section_title",
-      "label": "Section label",
-      "info": "Optional small grey label rendered above the block. Used by the showcase view to identify each block."
+      "id": "title",
+      "label": "Block name",
+      "info": "Shown as this section's name in the theme editor (id 'title' is auto-used by the editor as the block label)."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Show name as a label on the storefront",
+      "info": "Off by default. Used by the block-showcase view to identify each block on the page.",
+      "default": false
     },
     {
       "type": "header",
